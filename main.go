@@ -36,7 +36,7 @@ func (postInfo *PostInfo) crawlData(url string) ([]string, PostInfo) {
 		log.Fatal(err)
 	}
 
-	doc.Find("div.Item1 a").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#ctl00_cphContent_Article_LienQuan div.Item1 a").Each(func(i int, s *goquery.Selection) {
 		str, exists := s.Attr("href")
 		if exists {
 			links = append(links, str)
