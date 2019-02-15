@@ -65,53 +65,29 @@ func (postInfo *PostInfo) crawlData(url string) ([]string, PostInfo) {
 	return links, post
 }
 
-func (postInfo *PostInfo) crawlRelatedLink(url string) PostInfo {
-	query := "https://www.thesaigontimes.vn" + url
-
-	post := PostInfo{}
-
-	post.URL = query
-
-	res, err := http.Get(query)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer res.Body.Close()
-
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	doc.Find("h1 span.Title").Each(func(i int, s *goquery.Selection) {
-		post.Title = s.Text()
-	})
-
-	doc.Find("td span.ReferenceSourceTG").Each(func(i int, s *goquery.Selection) {
-		post.Author = strings.Trim(string(s.Text()), "(*)")
-
-	})
-
-	doc.Find("td span.Date").Each(func(i int, s *goquery.Selection) {
-		post.Date = s.Text()
-	})
-
-	return post
-}
-
 func (posts *PostInfo) final() []PostInfo {
 	var listPost []PostInfo
+	relatedLinks := make(map[string]int)
 	postInfo := &PostInfo{}
 	links, post := postInfo.crawlData("https://www.thesaigontimes.vn/121624/Cuoc-cach-mang-dau-khi-da-phien.html")
-	listPost = append(listPost, post)
+
 	for _, link := range links {
-		newPost := post.crawlRelatedLink(link)
+		relatedLinks[link] = 1
+	}
+
+	listPost = append(listPost, post)
+
+	for _, link := range links {
+		newLinks, newPost := post.crawlData("https://www.thesaigontimes.vn" + link)
+
+		for _, newLink := range newLinks {
+			if relatedLinks[newLink] != 1 {
+				_, newPost := post.crawlData("https://www.thesaigontimes.vn" + newLink)
+				relatedLinks[newLink] = 1
+				listPost = append(listPost, newPost)
+			}
+		}
+
 		listPost = append(listPost, newPost)
 	}
 	return listPost
