@@ -19,7 +19,11 @@ type PostInfo struct {
 
 func (postInfo *PostInfo) crawlData(url string) ([]string, PostInfo) {
 	post := PostInfo{}
+
 	var links []string
+
+	post.URL = url
+
 	res, err := http.Get(url)
 
 	if err != nil {
@@ -63,7 +67,11 @@ func (postInfo *PostInfo) crawlData(url string) ([]string, PostInfo) {
 
 func (postInfo *PostInfo) crawlRelatedLink(url string) PostInfo {
 	query := "https://www.thesaigontimes.vn" + url
+
 	post := PostInfo{}
+
+	post.URL = query
+
 	res, err := http.Get(query)
 
 	if err != nil {
