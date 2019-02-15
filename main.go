@@ -10,6 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// PostInfo is a representation of a post in url including url, title, author, date
 type PostInfo struct {
 	URL    string
 	Title  string
@@ -65,11 +66,11 @@ func (postInfo *PostInfo) crawlData(url string) ([]string, PostInfo) {
 	return links, post
 }
 
-func (posts *PostInfo) final() []PostInfo {
+func (postInfo *PostInfo) handleRelatedLink() []PostInfo {
 	var listPost []PostInfo
 	relatedLinks := make(map[string]int)
-	postInfo := &PostInfo{}
-	links, post := postInfo.crawlData("https://www.thesaigontimes.vn/121624/Cuoc-cach-mang-dau-khi-da-phien.html")
+	posts := &PostInfo{}
+	links, post := posts.crawlData("https://www.thesaigontimes.vn/121624/Cuoc-cach-mang-dau-khi-da-phien.html")
 
 	for _, link := range links {
 		relatedLinks[link] = 1
@@ -94,9 +95,9 @@ func (posts *PostInfo) final() []PostInfo {
 }
 
 func main() {
-	example := &PostInfo{}
+	newCrawl := &PostInfo{}
 
-	lists := example.final()
+	lists := newCrawl.handleRelatedLink()
 
 	var content [][]string
 
