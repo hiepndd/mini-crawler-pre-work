@@ -125,10 +125,6 @@ func main() {
 	var content [][]string
 
 	for _, list := range lists {
-		// fmt.Println(list.URL)
-		// fmt.Println(list.Title)
-		// fmt.Println(list.Author)
-		// fmt.Println(list.Date)
 		post := []string{list.URL, list.Title, list.Author, list.Date}
 		content = append(content, post)
 	}
