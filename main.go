@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"encoding/csv"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -113,11 +114,29 @@ func main() {
 
 	lists := example.final()
 
+	var content [][]string
+
 	for _, list := range lists {
-		fmt.Println(list.URL)
-		fmt.Println(list.Title)
-		fmt.Println(list.Author)
-		fmt.Println(list.Date)
+		// fmt.Println(list.URL)
+		// fmt.Println(list.Title)
+		// fmt.Println(list.Author)
+		// fmt.Println(list.Date)
+		post := []string{list.URL, list.Title, list.Author, list.Date}
+		content = append(content, post)
 	}
+
+	file, err := os.OpenFile("result.csv", os.O_CREATE|os.O_WRONLY, 0777)
+
+	defer file.Close()
+
+	if err != nil {
+		os.Exit(1)
+	}
+
+	csvWriter := csv.NewWriter(file)
+
+	csvWriter.WriteAll(content)
+
+	csvWriter.Flush()
 
 }
